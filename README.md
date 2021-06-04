@@ -55,7 +55,5 @@ item_authorEmail
 ```
 
 ## TODO
-- systemd unit
-- systemd timer
 - additional flags
 - additional examples

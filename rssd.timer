@@ -1,0 +1,10 @@
+[Unit]
+Description=RSS polling timer
+
+[Timer]
+OnBootSec=2m
+OnUnitActiveSec=5m
+Unit=rssd.service
+
+[Install]
+WantedBy=timers.target

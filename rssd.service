@@ -1,0 +1,6 @@
+[Unit]
+Description=RSS polling daemon
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/rssd
