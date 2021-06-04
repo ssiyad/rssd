@@ -40,16 +40,35 @@ func main() {
 	}
 
 	var config string
+	var standalone bool
+	var interval int
+
 	flag.StringVar(&config, "config", fmt.Sprintf("%v/rssd/config.json", xdgConfigHome), "path to config file")
+	flag.BoolVar(&standalone, "standalone", false, "whether rssd should loop on it's own")
+	flag.IntVar(&interval, "interval", 5, "interval in minutes for standalone mode")
 	flag.Parse()
 
-	err := initConfig(config)
+	if standalone {
+		for {
+			d(config)
+			time.Sleep(time.Duration(interval * int(time.Minute)))
+		}
+	} else {
+		d(config)
+		os.Exit(0)
+	}
+}
+
+func d(c string) {
+
+	err := initConfig(c)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	if len(flag.Args()) == 0 {
-		synchronize(config)
+		synchronize(c)
+		return
 	}
 
 	if flag.Arg(0) == "add-feed" {
@@ -57,7 +76,7 @@ func main() {
 			fmt.Fprintln(os.Stderr, "insufficient number of arguments")
 			os.Exit(2)
 		}
-		err := addFeed(config, flag.Arg(1))
+		err := addFeed(c, flag.Arg(1))
 		if err != nil {
 			panic(err.Error())
 		}
@@ -65,7 +84,7 @@ func main() {
 	}
 
 	if flag.Arg(0) == "list-feed" {
-		err := listFeed(config)
+		err := listFeed(c)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -77,7 +96,7 @@ func main() {
 		if err != nil {
 			panic(err.Error())
 		}
-		err = removeFeed(config, i)
+		err = removeFeed(c, i)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -89,7 +108,7 @@ func main() {
 			fmt.Fprintln(os.Stderr, "insufficient number of arguments")
 			os.Exit(2)
 		}
-		err := setExec(config, flag.Arg(1))
+		err := setExec(c, flag.Arg(1))
 		if err != nil {
 			panic(err.Error())
 		}
@@ -146,8 +165,6 @@ func synchronize(p string) {
 	if err != nil {
 		panic(err)
 	}
-
-	os.Exit(0)
 }
 
 func setExec(p string, e string) error {

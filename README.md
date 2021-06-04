@@ -40,7 +40,11 @@ You could remove a feed using it's index
 `rssd set-exec "https://api.telegram.org/bot\$BOT_TOKEN/sendMessage?chat_id=\$TG_CHAT&text=&item_title"`
 
 ### Running rssd
-A systemd timer and unit is provided
+A systemd timer and unit is provided or using `--standalone`
+```
+rssd --standalone --interval 1
+```
+`--interval` is in minutes and used only in standalone mode
 
 ## Available placeholders
 Placeholders need to be prefixed with `&`, like `&item_title`
