@@ -51,7 +51,7 @@ func main() {
 	if standalone {
 		for {
 			d(config)
-			time.Sleep(time.Duration(interval * int(time.Minute)))
+			time.Sleep(time.Duration(interval) * time.Minute)
 		}
 	} else {
 		d(config)
