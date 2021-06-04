@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/mmcdole/gofeed"
+	"github.com/olekukonko/tablewriter"
 )
 
 type feedItem struct {
@@ -56,6 +57,14 @@ func main() {
 			os.Exit(2)
 		}
 		err := addFeed(config, flag.Arg(1))
+		if err != nil {
+			panic(err.Error())
+		}
+		os.Exit(0)
+	}
+
+	if flag.Arg(0) == "list-feed" {
+		err := listFeed(config)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -140,6 +149,24 @@ func setExec(p string, e string) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func listFeed(p string) error {
+	s, err := readConfig(p)
+	if err != nil {
+		return err
+	}
+
+	t := tablewriter.NewWriter(os.Stdout)
+	t.SetHeader([]string{"Feed", "Last"})
+
+	for _, v := range s.Feeds {
+		t.Append([]string{v.Feed, v.Last})
+	}
+
+	t.Render()
 
 	return nil
 }

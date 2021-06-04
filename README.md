@@ -8,10 +8,21 @@
 ## Usage
 ### Config
 Default location is `$XDG_CONFIG_HOME/rssd/config.json` but could be overridden with `--config`
-- `rssd --config ./cfg/cfg.json`
+`rssd --config ./cfg/cfg.json`
 
 ### Adding a feed
 `rssd add-feed "https://ssiyad.com/blog/index.xml"`
+
+### Listing current feeds
+`rssd list-feed`
+and output will be something like,
+```
++--------------------------------+-----------------------------------+
+|              FEED              |               LAST                |
++--------------------------------+-----------------------------------+
+| http://rss.art19.com/the-daily | https://www.nytimes.com/the-daily |
++--------------------------------+-----------------------------------+
+```
 
 ### Setting the command to execute
 `rssd set-exec command`
@@ -26,6 +37,7 @@ Default location is `$XDG_CONFIG_HOME/rssd/config.json` but could be overridden 
 You should be able to use rssd by just calling `./rssd` but a timer/cron job is more appropriate.
 
 ## Available placeholders
+Placeholders need to be prefixed with `&`, like `&item_title`
 ```
 title
 desc
@@ -41,7 +53,6 @@ item_authorEmail
 ## TODO
 - systemd unit
 - systemd timer
-- list feed
 - remove feed
 - additional flags
 - additional examples
