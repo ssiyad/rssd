@@ -2,8 +2,11 @@
 #### Poll and execute command when there is a new rss item  
 *There is still much to do, keep your eyes open*
 
-## Building
-`go build`
+## Installation
+```
+make
+make install
+```
 
 ## Usage
 ### Config
