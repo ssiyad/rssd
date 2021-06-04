@@ -4,24 +4,25 @@
 
 ## Installation
 ```
-make
-make install
+> make
+> make install
 ```
 
 ## Usage
 ### Config
 Default location is `$XDG_CONFIG_HOME/rssd/config.json` but could be overridden with `--config`
 ```
-rssd --config ./cfg/cfg.json
+> rssd --config ./cfg/cfg.json
 ```
 
 ### Adding a feed
-`rssd add-feed "https://ssiyad.com/blog/index.xml"`
+```
+> rssd add-feed "https://ssiyad.com/blog/index.xml"
+```
 
 ### Listing current feeds
-`rssd list-feed`
-and output will be something like,
 ```
+> rssd list-feed
 +-------+--------------------------------+-----------------------------------+
 | INDEX |              FEED              |               LAST                |
 +-------+--------------------------------+-----------------------------------+
@@ -30,24 +31,38 @@ and output will be something like,
 ```
 
 ### Removing a feed
-You could remove a feed using it's index  
-`rssd remove-feed 0`
+```
+> rssd remove-feed 0
+removed:  https://www.twentyfournews.com/feed
+```
 
 ### Setting the command to execute
-`rssd set-exec command`
+```
+> rssd set-exec command
+```
 
 #### Examples
 - Desktop notifications  
-`rssd set-exec "notify-send '&title' '&item_title'"`
+    ```
+    > rssd set-exec "notify-send '&title' '&item_title'"
+    ```
 - Telegram bot  
-`rssd set-exec "https://api.telegram.org/bot\$BOT_TOKEN/sendMessage?chat_id=\$TG_CHAT&text=&item_title"`
+    ```
+    > rssd set-exec "https://api.telegram.org/bot\$BOT_TOKEN/sendMessage?chat_id=\$TG_CHAT&text=&item_title"
+    ```
 
 ### Running rssd
-A systemd timer and unit is provided or using `--standalone`
-```
-rssd --standalone --interval 1
-```
-`--interval` is in minutes and used only in standalone mode
+- using systemd  
+    ```
+    > systemctl --user enable rssd.timer
+    > systemctl --user start rssd.timer
+    ```
+    *`make install` copy service and unit files into `/usr/lib/systemd/user`*
+- with standalone mode
+    ```
+    > rssd --standalone --interval 5
+    ```
+    *`--interval` is in minutes and is used only when in standalone mode*
 
 ## Available placeholders
 Placeholders need to be prefixed with `&`, like `&item_title`
@@ -62,7 +77,3 @@ item_desc
 item_authorName
 item_authorEmail
 ```
-
-## TODO
-- additional flags
-- additional examples
