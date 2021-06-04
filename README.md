@@ -3,10 +3,24 @@
 *There is still much to do, keep your eyes open*
 
 ## Installation
-```
-> make
-> make install
-```
+- Manually
+    ```
+    > git clone https://github.com/ssiyad/rssd
+    > cd rssd
+    > make
+    > make install
+    ```
+- From AUR
+    ```
+    > git clone https://aur.archlinux.org/rssd.git
+    > cd rssd
+    > makepkg -si
+    ```
+    or using your favorite AUR helper
+    ```
+    yay -S rssd
+    ```
+- or download a release, and manually copy executable into `$PATH`
 
 ## Usage
 ### Config
