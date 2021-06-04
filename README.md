@@ -6,6 +6,10 @@
 `go build`
 
 ## Usage
+### Config
+Default location is `$XDG_CONFIG_HOME/rssd/config.json` but could be overridden with `--config`
+- `rssd --config ./cfg/cfg.json`
+
 ### Adding a feed
 `rssd add-feed "https://ssiyad.com/blog/index.xml"`
 
@@ -17,6 +21,9 @@
 `rssd set-exec "notify-send '&title' '&item_title'"`
 - Telegram bot  
 `rssd set-exec "https://api.telegram.org/bot\$BOT_TOKEN/sendMessage?chat_id=\$TG_CHAT&text=&item_title"`
+
+### Running rssd
+You should be able to use rssd by just calling `./rssd` but a timer/cron job is more appropriate.
 
 ## Available placeholders
 ```
