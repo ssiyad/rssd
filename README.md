@@ -17,12 +17,16 @@ Default location is `$XDG_CONFIG_HOME/rssd/config.json` but could be overridden 
 `rssd list-feed`
 and output will be something like,
 ```
-+--------------------------------+-----------------------------------+
-|              FEED              |               LAST                |
-+--------------------------------+-----------------------------------+
-| http://rss.art19.com/the-daily | https://www.nytimes.com/the-daily |
-+--------------------------------+-----------------------------------+
++-------+--------------------------------+-----------------------------------+
+| INDEX |              FEED              |               LAST                |
++-------+--------------------------------+-----------------------------------+
+|     0 | http://rss.art19.com/the-daily | https://www.nytimes.com/the-daily |
++-------+--------------------------------+-----------------------------------+
 ```
+
+### Removing a feed
+You could remove a feed using it's index  
+`rssd remove-feed 0`
 
 ### Setting the command to execute
 `rssd set-exec command`
@@ -53,6 +57,5 @@ item_authorEmail
 ## TODO
 - systemd unit
 - systemd timer
-- remove feed
 - additional flags
 - additional examples

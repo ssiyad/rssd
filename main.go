@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -65,6 +66,18 @@ func main() {
 
 	if flag.Arg(0) == "list-feed" {
 		err := listFeed(config)
+		if err != nil {
+			panic(err.Error())
+		}
+		os.Exit(0)
+	}
+
+	if flag.Arg(0) == "remove-feed" {
+		i, err := strconv.Atoi(flag.Arg(1))
+		if err != nil {
+			panic(err.Error())
+		}
+		err = removeFeed(config, i)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -160,10 +173,10 @@ func listFeed(p string) error {
 	}
 
 	t := tablewriter.NewWriter(os.Stdout)
-	t.SetHeader([]string{"Feed", "Last"})
+	t.SetHeader([]string{"Index", "Feed", "Last"})
 
-	for _, v := range s.Feeds {
-		t.Append([]string{v.Feed, v.Last})
+	for i, v := range s.Feeds {
+		t.Append([]string{fmt.Sprint(i), v.Feed, v.Last})
 	}
 
 	t.Render()
@@ -190,6 +203,29 @@ func addFeed(p string, feed string) error {
 	s.Feeds = append(s.Feeds, feedItem{feed, ""})
 
 	err = writeConfig(p, s)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func removeFeed(p string, i int) error {
+	c, err := readConfig(p)
+	if err != nil {
+		return err
+	}
+
+	if len(c.Feeds) <= i {
+		return errors.New("invalid index")
+	}
+
+	fmt.Println("removed: ", c.Feeds[i].Feed)
+
+	// https://stackoverflow.com/a/37335777/11143333
+	c.Feeds = append(c.Feeds[:i], c.Feeds[i+1:]...)
+
+	err = writeConfig(p, c)
 	if err != nil {
 		return err
 	}
