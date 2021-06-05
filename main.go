@@ -138,6 +138,8 @@ func synchronize(p string) error {
 			}
 
 			s := c.Exec
+			s = os.ExpandEnv(s)
+
 			_, err = os.Stat(c.Exec)
 			if err == nil {
 				e, err := os.ReadFile(c.Exec)
@@ -167,7 +169,6 @@ func synchronize(p string) error {
 				"&item_authorEmail": itemAuthorEmail,
 			} {
 				s = strings.ReplaceAll(s, q, r)
-				s = os.ExpandEnv(s)
 			}
 
 			err = exec.Command("sh", "-c", s).Run()
