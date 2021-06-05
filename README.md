@@ -52,7 +52,7 @@ removed:  https://www.twentyfournews.com/feed
 
 ### Setting the command to execute
 ```
-> rssd set-exec command
+> rssd set-exec *command or /path/to/script*
 ```
 
 #### Examples
