@@ -60,14 +60,16 @@ func main() {
 }
 
 func d(c string) {
-
 	err := initConfig(c)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	if len(flag.Args()) == 0 {
-		synchronize(c)
+		err := synchronize(c)
+		if err != nil {
+			panic(err.Error())
+		}
 		return
 	}
 
@@ -118,20 +120,16 @@ func d(c string) {
 	os.Exit(1)
 }
 
-func synchronize(p string) {
+func synchronize(p string) error {
 	c, err := readConfig(p)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	for i, v := range c.Feeds {
-		ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-
-		defer cancel()
-
-		f, err := (gofeed.NewParser()).ParseURLWithContext(v.Feed, ctx)
+		f, err := getFeed(v.Feed)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		if f.Items[0].Link != v.Last {
@@ -153,7 +151,7 @@ func synchronize(p string) {
 
 			err = exec.Command("sh", "-c", s).Run()
 			if err != nil {
-				panic(err)
+				return err
 			}
 
 			v.Last = f.Items[0].Link
@@ -163,8 +161,10 @@ func synchronize(p string) {
 
 	err = writeConfig(p, c)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 func setExec(p string, e string) error {
@@ -181,6 +181,19 @@ func setExec(p string, e string) error {
 	}
 
 	return nil
+}
+
+func getFeed(url string) (*gofeed.Feed, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+
+	defer cancel()
+
+	f, err := (gofeed.NewParser()).ParseURLWithContext(url, ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return f, nil
 }
 
 func listFeed(p string) error {
@@ -217,7 +230,12 @@ func addFeed(p string, feed string) error {
 		return errors.New("duplicate feed")
 	}
 
-	s.Feeds = append(s.Feeds, feedItem{feed, ""})
+	f, err := getFeed(feed)
+	if err != nil {
+		return err
+	}
+
+	s.Feeds = append(s.Feeds, feedItem{feed, f.Items[0].Link})
 
 	err = writeConfig(p, s)
 	if err != nil {
