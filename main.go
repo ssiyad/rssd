@@ -138,6 +138,14 @@ func synchronize(p string) error {
 			}
 
 			s := c.Exec
+			_, err = os.Stat(c.Exec)
+			if err == nil {
+				e, err := os.ReadFile(c.Exec)
+				if err != nil {
+					return err
+				}
+				s = string(e)
+			}
 
 			var itemAuthorName string
 			var itemAuthorEmail string
