@@ -311,7 +311,7 @@ func writeConfig(p string, c *config) error {
 		return err
 	}
 
-	b, err := json.Marshal(c)
+	b, err := json.MarshalIndent(c, "", "	")
 	if err != nil {
 		return err
 	}
