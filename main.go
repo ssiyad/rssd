@@ -132,18 +132,31 @@ func synchronize(p string) error {
 			return err
 		}
 
-		if f.Items[0].Link != v.Last {
+		for _, item := range f.Items {
+			if item.Link == v.Last {
+				break
+			}
+
 			s := c.Exec
+
+			var itemAuthorName string
+			var itemAuthorEmail string
+
+			if item.Authors != nil {
+				itemAuthorName = item.Authors[0].Name
+				itemAuthorEmail = item.Authors[0].Email
+			}
+
 			for q, r := range map[string]string{
 				"&title":            f.Title,
 				"&desc":             f.Description,
 				"&lang":             f.Language,
-				"&item_title":       f.Items[0].Title,
-				"&item_link":        f.Items[0].Link,
-				"&item_pubDate":     f.Items[0].Published,
-				"&item_desc":        f.Items[0].Description,
-				"&item_authorName":  f.Items[0].Author.Name,
-				"&item_authorEmail": f.Items[0].Author.Email,
+				"&item_title":       item.Title,
+				"&item_link":        item.Link,
+				"&item_pubDate":     item.Published,
+				"&item_desc":        item.Description,
+				"&item_authorName":  itemAuthorName,
+				"&item_authorEmail": itemAuthorEmail,
 			} {
 				s = strings.ReplaceAll(s, q, r)
 				s = os.ExpandEnv(s)
@@ -153,10 +166,9 @@ func synchronize(p string) error {
 			if err != nil {
 				return err
 			}
-
-			v.Last = f.Items[0].Link
-			c.Feeds[i] = v
 		}
+		v.Last = f.Items[0].Link
+		c.Feeds[i] = v
 	}
 
 	err = writeConfig(p, c)
