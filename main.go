@@ -140,7 +140,7 @@ func synchronize(p string) error {
 			s := c.Exec
 			s = os.ExpandEnv(s)
 
-			_, err = os.Stat(c.Exec)
+			_, err = os.Stat(s)
 			if err == nil {
 				e, err := os.ReadFile(c.Exec)
 				if err != nil {
