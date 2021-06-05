@@ -62,7 +62,7 @@ removed:  https://www.twentyfournews.com/feed
     ```
 - Telegram bot  
     ```
-    > rssd set-exec "https://api.telegram.org/bot\$BOT_TOKEN/sendMessage?chat_id=\$TG_CHAT&text=&item_title"
+    > rssd set-exec "curl https://api.telegram.org/bot\$BOT_TOKEN/sendMessage?chat_id=\$TG_CHAT&text=&item_title"
     ```
 
 ### Running rssd
