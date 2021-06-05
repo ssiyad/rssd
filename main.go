@@ -34,16 +34,16 @@ func main() {
 		panic(errors.New("HOME is not set"))
 	}
 
-	xdgConfigHome, ok := os.LookupEnv("XDG_CONFIG_HOME")
+	configDir, ok := os.LookupEnv("XDG_CONFIG_HOME")
 	if !ok {
-		xdgConfigHome = fmt.Sprintf("%v/.config", home)
+		configDir = fmt.Sprintf("%v/.config", home)
 	}
 
 	var config string
 	var standalone bool
 	var interval int
 
-	flag.StringVar(&config, "config", fmt.Sprintf("%v/rssd/config.json", xdgConfigHome), "path to config file")
+	flag.StringVar(&config, "config", fmt.Sprintf("%v/rssd/config.json", configDir), "path to config file")
 	flag.BoolVar(&standalone, "standalone", false, "whether rssd should loop on it's own")
 	flag.IntVar(&interval, "interval", 5, "interval in minutes for standalone mode")
 	flag.Parse()
