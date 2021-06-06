@@ -297,7 +297,11 @@ func readConfig(p string) (*config, error) {
 
 	defer f.Close()
 
-	d := make([]byte, 1000)
+	fileStat, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	d := make([]byte, fileStat.Size())
 	_, err = f.Read(d)
 	if err != nil {
 		return nil, err
