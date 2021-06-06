@@ -31,7 +31,8 @@ type config struct {
 func main() {
 	home, ok := os.LookupEnv("HOME")
 	if !ok {
-		panic(errors.New("HOME is not set"))
+		fmt.Println(errors.New("HOME is not set"))
+		os.Exit(1)
 	}
 
 	configDir, ok := os.LookupEnv("XDG_CONFIG_HOME")
@@ -62,13 +63,15 @@ func main() {
 func d(c string) {
 	err := initConfig(c)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	if len(flag.Args()) == 0 {
 		err := synchronize(c)
 		if err != nil {
-			panic(err.Error())
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		return
 	}
@@ -80,7 +83,8 @@ func d(c string) {
 		}
 		err := addFeed(c, flag.Arg(1))
 		if err != nil {
-			panic(err.Error())
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		os.Exit(0)
 	}
@@ -88,7 +92,8 @@ func d(c string) {
 	if flag.Arg(0) == "list-feed" {
 		err := listFeed(c)
 		if err != nil {
-			panic(err.Error())
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		os.Exit(0)
 	}
@@ -96,11 +101,13 @@ func d(c string) {
 	if flag.Arg(0) == "remove-feed" {
 		i, err := strconv.Atoi(flag.Arg(1))
 		if err != nil {
-			panic(err.Error())
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		err = removeFeed(c, i)
 		if err != nil {
-			panic(err.Error())
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		os.Exit(0)
 	}
@@ -112,7 +119,8 @@ func d(c string) {
 		}
 		err := setExec(c, flag.Arg(1))
 		if err != nil {
-			panic(err.Error())
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		os.Exit(0)
 	}
@@ -123,13 +131,13 @@ func d(c string) {
 func synchronize(p string) error {
 	c, err := readConfig(p)
 	if err != nil {
-		return err
+		return fmt.Errorf("synchronize -> %v", err)
 	}
 
 	for i, v := range c.Feeds {
 		f, err := getFeed(v.Feed)
 		if err != nil {
-			return err
+			return fmt.Errorf("synchronize -> %v", err)
 		}
 
 		for _, item := range f.Items {
@@ -144,7 +152,7 @@ func synchronize(p string) error {
 			if err == nil {
 				e, err := os.ReadFile(c.Exec)
 				if err != nil {
-					return err
+					return fmt.Errorf("synchronize -> %v", err)
 				}
 				s = string(e)
 			}
@@ -173,7 +181,7 @@ func synchronize(p string) error {
 
 			err = exec.Command("sh", "-c", s).Run()
 			if err != nil {
-				return err
+				return fmt.Errorf("synchronize -> %v", err)
 			}
 		}
 		v.Last = f.Items[0].Link
@@ -182,7 +190,7 @@ func synchronize(p string) error {
 
 	err = writeConfig(p, c)
 	if err != nil {
-		return err
+		return fmt.Errorf("synchronize -> %v", err)
 	}
 
 	return nil
@@ -191,14 +199,14 @@ func synchronize(p string) error {
 func setExec(p string, e string) error {
 	c, err := readConfig(p)
 	if err != nil {
-		return err
+		return fmt.Errorf("setExec -> %v", err)
 	}
 
 	c.Exec = e
 
 	err = writeConfig(p, c)
 	if err != nil {
-		return err
+		return fmt.Errorf("setExec -> %v", err)
 	}
 
 	return nil
@@ -211,7 +219,7 @@ func getFeed(url string) (*gofeed.Feed, error) {
 
 	f, err := (gofeed.NewParser()).ParseURLWithContext(url, ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("getFeed -> %v", err)
 	}
 
 	return f, nil
@@ -220,7 +228,7 @@ func getFeed(url string) (*gofeed.Feed, error) {
 func listFeed(p string) error {
 	s, err := readConfig(p)
 	if err != nil {
-		return err
+		return fmt.Errorf("listFeed -> %v", err)
 	}
 
 	t := tablewriter.NewWriter(os.Stdout)
@@ -238,7 +246,7 @@ func listFeed(p string) error {
 func addFeed(p string, feed string) error {
 	s, err := readConfig(p)
 	if err != nil {
-		return err
+		return fmt.Errorf("addFeed -> %v", err)
 	}
 
 	flag := false
@@ -248,19 +256,19 @@ func addFeed(p string, feed string) error {
 		}
 	}
 	if flag {
-		return errors.New("duplicate feed")
+		return fmt.Errorf("addFeed -> %v", err)
 	}
 
 	f, err := getFeed(feed)
 	if err != nil {
-		return err
+		return fmt.Errorf("addFeed -> %v", err)
 	}
 
 	s.Feeds = append(s.Feeds, feedItem{feed, f.Items[0].Link})
 
 	err = writeConfig(p, s)
 	if err != nil {
-		return err
+		return fmt.Errorf("addFeed -> %v", err)
 	}
 
 	return nil
@@ -269,11 +277,11 @@ func addFeed(p string, feed string) error {
 func removeFeed(p string, i int) error {
 	c, err := readConfig(p)
 	if err != nil {
-		return err
+		return fmt.Errorf("removeFeed -> %v", err)
 	}
 
 	if len(c.Feeds) <= i {
-		return errors.New("invalid index")
+		return fmt.Errorf("removeFeed -> %v", err)
 	}
 
 	fmt.Println("removed: ", c.Feeds[i].Feed)
@@ -283,7 +291,7 @@ func removeFeed(p string, i int) error {
 
 	err = writeConfig(p, c)
 	if err != nil {
-		return err
+		return fmt.Errorf("removeFeed -> %v", err)
 	}
 
 	return nil
@@ -292,19 +300,19 @@ func removeFeed(p string, i int) error {
 func readConfig(p string) (*config, error) {
 	f, err := os.OpenFile(p, os.O_RDWR, 0600)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("readConfig -> %v", err)
 	}
 
 	defer f.Close()
 
 	fileStat, err := f.Stat()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("readConfig -> %v", err)
 	}
 	d := make([]byte, fileStat.Size())
 	_, err = f.Read(d)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("readConfig -> %v", err)
 	}
 
 	d = bytes.Trim(d, "\x00")
@@ -312,7 +320,7 @@ func readConfig(p string) (*config, error) {
 	var s config
 	err = json.Unmarshal(d, &s)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("readConfig -> %v", err)
 	}
 
 	return &s, nil
@@ -321,22 +329,22 @@ func readConfig(p string) (*config, error) {
 func writeConfig(p string, c *config) error {
 	f, err := os.OpenFile(p, os.O_RDWR, 0600)
 	if err != nil {
-		return err
+		return fmt.Errorf("writeConfig -> %v", err)
 	}
 
 	b, err := json.MarshalIndent(c, "", "	")
 	if err != nil {
-		return err
+		return fmt.Errorf("writeConfig -> %v", err)
 	}
 
 	err = f.Truncate(0)
 	if err != nil {
-		return err
+		return fmt.Errorf("writeConfig -> %v", err)
 	}
 
 	_, err = f.Write(b)
 	if err != nil {
-		return err
+		return fmt.Errorf("writeConfig -> %v", err)
 	}
 
 	return nil
@@ -347,23 +355,23 @@ func initConfig(p string) error {
 	if os.IsNotExist(err) {
 		err := os.MkdirAll(filepath.Dir(p), 0755)
 		if err != nil {
-			return err
+			return fmt.Errorf("initConfig -> %v", err)
 		}
 
 		f, err := os.OpenFile(p, os.O_WRONLY|os.O_CREATE, 0600)
 		if err != nil {
-			return err
+			return fmt.Errorf("initConfig -> %v", err)
 		}
 
 		c, err := json.Marshal(config{})
 		if err != nil {
-			return err
+			return fmt.Errorf("initConfig -> %v", err)
 		}
 
 		f.Truncate(0)
 		_, err = f.Write(c)
 		if err != nil {
-			return err
+			return fmt.Errorf("initConfig -> %v", err)
 		}
 	}
 
