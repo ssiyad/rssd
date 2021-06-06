@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -314,8 +313,6 @@ func readConfig(p string) (*config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("readConfig -> %v", err)
 	}
-
-	d = bytes.Trim(d, "\x00")
 
 	var s config
 	err = json.Unmarshal(d, &s)
