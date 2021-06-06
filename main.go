@@ -150,7 +150,7 @@ func synchronize(p string) error {
 
 			_, err = os.Stat(s)
 			if err == nil {
-				e, err := os.ReadFile(c.Exec)
+				e, err := os.ReadFile(s)
 				if err != nil {
 					return fmt.Errorf("synchronize -> %v", err)
 				}
