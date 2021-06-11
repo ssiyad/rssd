@@ -180,7 +180,7 @@ func synchronize(p string) error {
 
 			err = exec.Command("sh", "-c", s).Run()
 			if err != nil {
-				return fmt.Errorf("synchronize -> %v", err)
+				fmt.Println(fmt.Errorf("synchronize: error running command - %v -> %v", s, err))
 			}
 		}
 		v.Last = f.Items[0].Link
