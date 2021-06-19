@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -212,11 +211,9 @@ func setExec(p string, e string) error {
 }
 
 func getFeed(url string) (*gofeed.Feed, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	fp := gofeed.NewParser()
 
-	defer cancel()
-
-	f, err := (gofeed.NewParser()).ParseURLWithContext(url, ctx)
+	f, err := fp.ParseURL(url)
 	if err != nil {
 		return nil, fmt.Errorf("getFeed -> %v", err)
 	}
